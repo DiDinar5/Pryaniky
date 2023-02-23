@@ -2,7 +2,7 @@
 
 namespace Pryaniky.Models
 {
-    public class PryanikyItem
+    public class Pryanik
     {
         public long Id { get; set; }
         [Required]
