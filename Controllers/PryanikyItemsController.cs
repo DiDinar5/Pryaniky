@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pryaniky.Models;
 
@@ -22,39 +17,52 @@ namespace Pryaniky.Controllers
 
         // GET: api/PryanikyItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PryanikyItemDTO>>> GetPryanikyItems()
+        public async Task<ActionResult<IEnumerable<PryanikyItem>>> GetPryanikyItems()
         {
-            return await _context.PryanikyItems.Select(x=> ItemPryanikyDTO(x)).ToListAsync();
+            return await _context.PryanikyItemContext.Select(x=> ItemPryaniky(x)).ToListAsync();
         }
 
-        // GET: api/PryanikyItems/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PryanikyItemDTO>> GetPryanikyItem(long id)
+        [HttpPost]
+        public async Task<ActionResult<PryanikyItem>> PostPryanikyItem(PryanikyItem pryaniky)
         {
-            var pryanikyItem = await _context.PryanikyItems.FindAsync(id);
+            var pryanikyItem = new PryanikyItem
+            {
+                Product = pryaniky.Product,
+                Price = pryaniky.Price
+            };
+            _context.PryanikyItemContext.Add(pryanikyItem);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetPryanik),
+                new { id = pryanikyItem.Id },
+                ItemPryaniky(pryanikyItem));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PryanikyItem>> GetPryanik(long id)
+        {
+            var pryanikyItem = await _context.PryanikyItemContext.FindAsync(id);
 
             if (pryanikyItem == null)
             {
-                return NotFound();
+                return NotFound(new {Message = "неверный ID"});
             }
-            return ItemPryanikyDTO(pryanikyItem);
+            return ItemPryaniky(pryanikyItem);
         }
 
-        // PUT: api/PryanikyItems/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPryanikyItem(long id, PryanikyItemDTO pryanikyDTO)
+        public async Task<IActionResult> PutPryanikyItem(long id, PryanikyItem pryaniky)
         {
-            if (id != pryanikyDTO.Id)
+            if (id != pryaniky.Id)
             {
-                return BadRequest();
+                return BadRequest(new {Message = "ID не найден"});
             }
-            var pryanikyItem = await _context.PryanikyItems.FindAsync(id);
+            var pryanikyItem = await _context.PryanikyItemContext.FindAsync(id);
             if(pryanikyItem == null)
             {
-                return NotFound();
+                return NotFound(new { Message = "ID равен null" });
             }
-            pryanikyItem.Name = pryanikyDTO.Name;
-            pryanikyItem.IsComplete = pryanikyDTO.IsComplete;
+            pryanikyItem.Product = pryaniky.Product;
+            pryanikyItem.Price = pryaniky.Price;
             try
             {
                 await _context.SaveChangesAsync();
@@ -67,46 +75,29 @@ namespace Pryaniky.Controllers
             return NoContent();
         }
 
-        // POST: api/PryanikyItems
-        [HttpPost]
-        public async Task<ActionResult<PryanikyItemDTO>> PostPryanikyItem(PryanikyItemDTO pryanikyDTO)
-        {
-            var pryanikyItem = new PryanikyItem
-            {
-                IsComplete = pryanikyDTO.IsComplete,
-                Name = pryanikyDTO.Name
-            };
-            _context.PryanikyItems.Add(pryanikyItem);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetPryanikyItem),
-                new { id = pryanikyItem.Id },
-                ItemPryanikyDTO(pryanikyItem));
-        }
-
-        // DELETE: api/PryanikyItems/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePryanikyItem(long id)
         {
-            var pryanikyItem = await _context.PryanikyItems.FindAsync(id);
+            var pryanikyItem = await _context.PryanikyItemContext.FindAsync(id);
             if (pryanikyItem == null)
             {
-                return NotFound();
+                return NotFound(new {Message = "ID не найден"});
             }
-            _context.PryanikyItems.Remove(pryanikyItem);
+            _context.PryanikyItemContext.Remove(pryanikyItem);
             await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok(new {Message = "Product deleted"});
         }
 
         private bool PryanikyItemExists(long id)
         {
-            return _context.PryanikyItems.Any(e => e.Id == id);
+            return _context.PryanikyItemContext.Any(e => e.Id == id);
         }
-        private static PryanikyItemDTO ItemPryanikyDTO(PryanikyItem item) =>
-            new PryanikyItemDTO()
+        private static PryanikyItem ItemPryaniky(PryanikyItem item) =>
+            new PryanikyItem()
             {
                 Id= item.Id,
-                Name= item.Name,    
-                IsComplete= item.IsComplete,
+                Product= item.Product,    
+                Price= item.Price,
             };
     }
 }

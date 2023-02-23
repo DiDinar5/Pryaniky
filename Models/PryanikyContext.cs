@@ -7,6 +7,6 @@ namespace Pryaniky.Models
         public PryanikyContext(DbContextOptions<PryanikyContext> options) :base(options)
         {
         }
-        public DbSet<PryanikyItem> PryanikyItems { get; set; } = null!;
+        public DbSet<PryanikyItem> PryanikyItemContext { get; set; } = null!;
     }
 }
