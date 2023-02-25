@@ -22,23 +22,25 @@ namespace Pryaniky.Controllers
 
         // GET: api/Orders
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public  ActionResult<IEnumerable<Order>> GetOrders()
         {
            
           if (_context.Orders == null)
           {
               return NotFound();
           }
-            return await _context.Orders.Include(o=>o.Pryaniks).ToListAsync();
+          var orders = _context.Orders.Include(o=>o.Pryaniks).ToList();
+            return  orders;
         }
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(List<Pryanik> pryaniks)
+        public async Task<ActionResult<Order>> PostOrder(List<long> pryaniksId)
         {
             if (_context.Orders == null)
             {
                 return Problem("Entity set 'PryanikyContext.Orders'  is null.");
             }
-            var order = new Order(pryaniks);
+            var pryaniky = _context.Pryaniky.Where(x => pryaniksId.Contains(x.Id));
+            var order = new Order(pryaniky.ToList());
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 

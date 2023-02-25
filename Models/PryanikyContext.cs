@@ -7,6 +7,7 @@ namespace Pryaniky.Models
     {
         public PryanikyContext(DbContextOptions<PryanikyContext> options) : base(options)
         {
+            Database.EnsureCreated();
         }
         public DbSet<Pryanik> Pryaniky { get; set; }
         public DbSet<Order> Orders { get; set; }
