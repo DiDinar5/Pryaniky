@@ -29,8 +29,9 @@ namespace Pryaniky.Controllers
                 return BadRequest(new { Message = "No data" });
             _context.Pryaniky.Add(pryanik);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetPryanik),
-                new { id = pryanik.Id });
+            return Created("PostPryanikyItem",pryanik);
+              //  nameof(GetPryanik),
+                //new { id = pryanik.Id });
         }
 
         [HttpGet("{id}")]

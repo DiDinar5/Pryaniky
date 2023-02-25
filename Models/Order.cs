@@ -15,5 +15,10 @@ namespace Pryaniky.Models
         public DateTime DateTime { get; set; }
         public List<Pryanik> Pryaniks { get; set; }  
         public decimal Sum { get; }
+        public Order()
+        {
+            DateTime= DateTime.Now;
+            Pryaniks= new List<Pryanik>();
+        }
     }
 }

@@ -24,11 +24,12 @@ namespace Pryaniky.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
+           
           if (_context.Orders == null)
           {
               return NotFound();
           }
-            return await _context.Orders.ToListAsync();
+            return await _context.Orders.Include(o=>o.Pryaniks).ToListAsync();
         }
         [HttpPost]
         public async Task<ActionResult<Order>> PostOrder(List<Pryanik> pryaniks)

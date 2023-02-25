@@ -3,9 +3,9 @@ using System.Diagnostics;
 
 namespace Pryaniky.Models
 {
-    public class PryanikyContext: DbContext
+    public class PryanikyContext : DbContext
     {
-        public PryanikyContext(DbContextOptions<PryanikyContext> options) :base(options)
+        public PryanikyContext(DbContextOptions<PryanikyContext> options) : base(options)
         {
         }
         public DbSet<Pryanik> Pryaniky { get; set; }
@@ -13,9 +13,11 @@ namespace Pryaniky.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //  base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Order>()
-             .HasMany<Pryanik>(o => o.Pryaniks)
-             .WithMany("Orders");
+            modelBuilder
+            .Entity<Order>()
+            .HasMany(o => o.Pryaniks)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("OrderPryanik"));
         }
     }
 }
